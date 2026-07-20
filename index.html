@@ -3230,4 +3230,81 @@
                 document.getElementById('mobileNavOverlay').classList.add('open');
             });
             document.getElementById('closeMobileNav').addEventListener('click', closeMobileNav);
-            document.getElementById
+
+            // Mobile nav overlay close
+            document.getElementById('mobileNavOverlay').addEventListener('click', closeMobileNav);
+
+            // Product modal close handlers
+            document.getElementById('closeProductModal').addEventListener('click', closeProductModal);
+            document.getElementById('productModal').addEventListener('click', function(e) {
+                if (e.target && e.target.id === 'productModal') closeProductModal();
+            });
+
+            // Modal quantity controls
+            document.getElementById('modalQtyPlus').addEventListener('click', function() {
+                const el = document.getElementById('modalQty');
+                let q = parseInt(el.textContent) || 1;
+                el.textContent = q + 1;
+            });
+            document.getElementById('modalQtyMinus').addEventListener('click', function() {
+                const el = document.getElementById('modalQty');
+                let q = parseInt(el.textContent) || 1;
+                if (q > 1) el.textContent = q - 1;
+            });
+
+            // Modal actions
+            document.getElementById('modalAddCart').addEventListener('click', function() {
+                const pid = document.getElementById('productModal').dataset.productId;
+                const qty = parseInt(document.getElementById('modalQty').textContent) || 1;
+                for (let i = 0; i < qty; i++) addToCart(pid);
+                closeProductModal();
+            });
+            document.getElementById('modalFavorite').addEventListener('click', function() {
+                const pid = document.getElementById('productModal').dataset.productId;
+                toggleFavorite(pid);
+            });
+            document.getElementById('modalStore').addEventListener('click', function() {
+                const sid = this.dataset.storeId;
+                if (sid) filterByStore(sid);
+            });
+
+            // Close mobile nav helper
+            function closeMobileNav() {
+                document.getElementById('mobileNav').classList.remove('open');
+                document.getElementById('mobileNavOverlay').classList.remove('open');
+            }
+
+            // Checkout summary calculation
+            function updateCheckoutSummary() {
+                const subtotal = AppState.cart.reduce((sum, item) => {
+                    const prod = getProduct(item.productId);
+                    return prod ? sum + prod.price * item.qty : sum;
+                }, 0);
+                const shipping = 2000;
+                const subtotalEl = document.getElementById('checkoutSubtotal');
+                const shippingEl = document.getElementById('checkoutShipping');
+                const totalEl = document.getElementById('checkoutTotal');
+                if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
+                if (shippingEl) shippingEl.textContent = formatPrice(shipping);
+                if (totalEl) totalEl.textContent = formatPrice(subtotal + shipping);
+            }
+
+            // Scroll top button
+            document.getElementById('scrollTopBtn').addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            window.addEventListener('scroll', function() {
+                const btn = document.getElementById('scrollTopBtn');
+                if (btn) btn.classList.toggle('visible', window.scrollY > 300);
+            });
+
+            // Initialize UI states
+            updateCartUI();
+            updateFavoritesUI();
+            updateHeroStats();
+
+        }); // DOMContentLoaded
+
+    </script>
+</body>
+</html>
